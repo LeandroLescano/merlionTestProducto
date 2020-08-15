@@ -1,0 +1,24 @@
+entity Product{
+    name String
+}
+
+entity Sales {
+    state State
+    deliveredDate LocalDate
+    finalDeliveredDate LocalDate
+    amountPaid Float
+    fullPayment Float
+}
+
+entity Providers {
+	name String
+}
+
+enum State {
+    IN_CHARGE, SHIPPED, DELIVERED
+}
+
+relationship ManyToOne{
+    Sales{product} to Product
+    Providers{product} to Product
+}
