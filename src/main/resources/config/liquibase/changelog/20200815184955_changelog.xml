@@ -1,0 +1,20 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-3.9.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd">
+    <changeSet author="Tateh (generated)" id="1597517403416-2">
+        <addColumn tableName="product">
+            <column name="provider_id" type="int8"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="Tateh (generated)" id="1597517403416-3">
+        <addForeignKeyConstraint baseColumnNames="provider_id" baseTableName="product" constraintName="FK58sh2afyy71b3f0gfakdmsqyk" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="providers" validate="true"/>
+    </changeSet>
+    <changeSet author="Tateh (generated)" id="1597517403416-4">
+        <dropForeignKeyConstraint baseTableName="providers" constraintName="fk_providers_product_id"/>
+    </changeSet>
+    <changeSet author="Tateh (generated)" id="1597517403416-5">
+        <dropColumn columnName="product_id" tableName="providers"/>
+    </changeSet>
+    <changeSet author="Tateh (generated)" id="1597517403416-1">
+        <alterSequence sequenceName="sequence_generator"/>
+    </changeSet>
+</databaseChangeLog>

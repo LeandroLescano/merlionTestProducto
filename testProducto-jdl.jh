@@ -20,5 +20,5 @@ enum State {
 
 relationship ManyToOne{
     Sales{product} to Product
-    Providers{product} to Product
+    Product{provider} to Providers
 }

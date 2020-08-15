@@ -39,9 +39,6 @@ export const Providers = (props: IProvidersProps) => {
                 <th>
                   <Translate contentKey="testApp.providers.name">Name</Translate>
                 </th>
-                <th>
-                  <Translate contentKey="testApp.providers.product">Product</Translate>
-                </th>
                 <th />
               </tr>
             </thead>
@@ -54,7 +51,6 @@ export const Providers = (props: IProvidersProps) => {
                     </Button>
                   </td>
                   <td>{providers.name}</td>
-                  <td>{providers.product ? <Link to={`product/${providers.product.id}`}>{providers.product.id}</Link> : ''}</td>
                   <td className="text-right">
                     <div className="btn-group flex-btn-group-container">
                       <Button tag={Link} to={`${match.url}/${providers.id}`} color="info" size="sm">

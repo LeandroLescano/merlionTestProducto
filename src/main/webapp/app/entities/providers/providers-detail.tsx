@@ -31,10 +31,6 @@ export const ProvidersDetail = (props: IProvidersDetailProps) => {
             </span>
           </dt>
           <dd>{providersEntity.name}</dd>
-          <dt>
-            <Translate contentKey="testApp.providers.product">Product</Translate>
-          </dt>
-          <dd>{providersEntity.product ? providersEntity.product.id : ''}</dd>
         </dl>
         <Button tag={Link} to="/providers" replace color="info">
           <FontAwesomeIcon icon="arrow-left" />{' '}
