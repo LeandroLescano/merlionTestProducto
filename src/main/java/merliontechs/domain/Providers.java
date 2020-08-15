@@ -1,6 +1,5 @@
 package merliontechs.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
@@ -26,10 +25,6 @@ public class Providers implements Serializable {
     @Column(name = "name")
     private String name;
 
-    @ManyToOne
-    @JsonIgnoreProperties(value = "providers", allowSetters = true)
-    private Product product;
-
     // jhipster-needle-entity-add-field - JHipster will add fields here
     public Long getId() {
         return id;
@@ -50,19 +45,6 @@ public class Providers implements Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public Product getProduct() {
-        return product;
-    }
-
-    public Providers product(Product product) {
-        this.product = product;
-        return this;
-    }
-
-    public void setProduct(Product product) {
-        this.product = product;
     }
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
