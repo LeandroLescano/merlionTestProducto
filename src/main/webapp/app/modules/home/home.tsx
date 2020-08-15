@@ -1,6 +1,6 @@
 import './home.scss';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Translate } from 'react-jhipster';
 import { connect } from 'react-redux';
@@ -20,6 +20,10 @@ export type IHomeProp = StateProps;
 export const Home = (props: IHomeProp) => {
   const { account } = props;
   const [value, setValue] = useState(0);
+
+  useEffect(() => {
+    console.log(props);
+  });
 
   const theme = createMuiTheme({
     palette: {
