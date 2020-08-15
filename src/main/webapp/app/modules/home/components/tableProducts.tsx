@@ -45,7 +45,7 @@ export const TableProducts = (props: ISalesProps) => {
                   <TableRow>
                     <TableCell key={i}>{sale.id}</TableCell>
                     <TableCell key={i}>{sale.product.name}</TableCell>
-                    <TableCell key={i}>{sale.product.provider_id}</TableCell>
+                    <TableCell key={i}>{sale.product.provider.name}</TableCell>
                     <TableCell key={i}>{sale.deliveredDate}</TableCell>
                     <TableCell key={i}>{sale.amountPaid}</TableCell>
                     <TableCell key={i}>{sale.fullPayment}</TableCell>
