@@ -11,6 +11,7 @@ import Paper from '@material-ui/core/Paper';
 import Container from '@material-ui/core/Container';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import { Row, Col, Alert, Table } from 'reactstrap';
+import TableProducts from './components/tableProducts';
 
 import { IRootState } from 'app/shared/reducers';
 
@@ -60,6 +61,7 @@ export const Home = (props: IHomeProp) => {
               </Tabs>
             </ThemeProvider>
           </Paper>
+          <TableProducts />
         </div>
       ) : (
         <div>
