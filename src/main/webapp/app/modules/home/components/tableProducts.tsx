@@ -13,14 +13,25 @@ import { IRootState } from 'app/shared/reducers';
 import { RouteComponentProps } from 'react-router-dom';
 import { getEntities } from 'app/entities/sales/sales.reducer';
 
-export interface ISalesProps extends StateProps, DispatchProps, RouteComponentProps<{ url: string }> {}
+function TableProducts() {
+  const [salesList, setSalesList] = useState([]);
 
-export const TableProducts = (props: ISalesProps) => {
   useEffect(() => {
-    props.getEntities();
+    const token = localStorage.getItem('jhi-authenticationToken').slice(1, -1);
+    const apiUrl = window.location.href + 'api/sales';
+    fetch(apiUrl, {
+      method: 'GET',
+      headers: new Headers({
+        accept: '*/*',
+        Authorization: 'Bearer ' + token,
+      }),
+    })
+      .then(response => response.json())
+      .then(data => setSalesList(data))
+      .catch(error => {
+        console.error(error);
+      });
   }, []);
-
-  const { salesList, match, loading } = props;
 
   return (
     <Paper>
@@ -42,14 +53,14 @@ export const TableProducts = (props: ISalesProps) => {
               .filter(s => s.state === 'IN_CHARGE')
               .map((sale, i) => {
                 return (
-                  <TableRow>
-                    <TableCell key={i}>{sale.id}</TableCell>
-                    <TableCell key={i}>{sale.product.name}</TableCell>
-                    <TableCell key={i}>{sale.product.provider.name}</TableCell>
-                    <TableCell key={i}>{sale.deliveredDate}</TableCell>
-                    <TableCell key={i}>{sale.amountPaid}</TableCell>
-                    <TableCell key={i}>{sale.fullPayment}</TableCell>
-                    <TableCell key={i}>
+                  <TableRow key={i}>
+                    <TableCell>{sale.id}</TableCell>
+                    <TableCell>{sale.product.name}</TableCell>
+                    <TableCell>{sale.product.provider.name}</TableCell>
+                    <TableCell>{sale.deliveredDate}</TableCell>
+                    <TableCell>{sale.amountPaid}</TableCell>
+                    <TableCell>{sale.fullPayment}</TableCell>
+                    <TableCell>
                       <Button color="primary">Enviar</Button>
                     </TableCell>
                   </TableRow>
@@ -60,18 +71,6 @@ export const TableProducts = (props: ISalesProps) => {
       </Table>
     </Paper>
   );
-};
+}
 
-const mapStateToProps = ({ sales }: IRootState) => ({
-  salesList: sales.entities,
-  loading: sales.loading,
-});
-
-const mapDispatchToProps = {
-  getEntities,
-};
-
-type StateProps = ReturnType<typeof mapStateToProps>;
-type DispatchProps = typeof mapDispatchToProps;
-
-export default connect(mapStateToProps, mapDispatchToProps)(TableProducts);
+export default TableProducts;

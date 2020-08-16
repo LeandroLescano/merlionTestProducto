@@ -21,10 +21,6 @@ export const Home = (props: IHomeProp) => {
   const { account } = props;
   const [value, setValue] = useState(0);
 
-  useEffect(() => {
-    console.log(props);
-  });
-
   const theme = createMuiTheme({
     palette: {
       primary: {
