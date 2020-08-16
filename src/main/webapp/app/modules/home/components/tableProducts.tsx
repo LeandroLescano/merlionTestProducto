@@ -8,29 +8,87 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Button from '@material-ui/core/Button';
-
-import { IRootState } from 'app/shared/reducers';
-import { RouteComponentProps } from 'react-router-dom';
-import { getEntities } from 'app/entities/sales/sales.reducer';
+import sales from 'app/entities/sales/sales';
+import { SalesState } from 'app/entities/sales/sales.reducer';
+import axios from 'axios';
 
 function TableProducts(props) {
   const [salesList, setSalesList] = useState([]);
 
-  useEffect(() => {
+  const getDate = () => {
+    var date = new Date();
+    var month = date.getMonth() + 1;
+    var currentDate = date.getFullYear() + '-' + month.toString().padStart(2, '0') + '-' + date.getDate().toString().padStart(2, '0');
+    console.log(currentDate);
+    return currentDate;
+  };
+
+  const handleChange = object => {
+    let dataAct = {};
     const token = localStorage.getItem('jhi-authenticationToken').slice(1, -1);
-    const apiUrl = window.location.href + 'api/sales/state/' + props.state;
-    fetch(apiUrl, {
-      method: 'GET',
-      headers: new Headers({
+    const apiUrl = window.location.href + 'api/sales';
+    setSalesList(salesList.filter(sale => sale.id !== object.id));
+    let newState = '';
+    let newFinalDate = '';
+    if (object.state === 'IN_CHARGE') {
+      newState = 'SHIPPED';
+      newFinalDate = object.finalDeliveredDate;
+    } else if (object.state === 'SHIPPED') {
+      newState = 'DELIVERED';
+      newFinalDate = getDate();
+    }
+    dataAct = {
+      amountPaid: object.amountPaid,
+      deliveredDate: object.deliveredDate,
+      finalDeliveredDate: newFinalDate,
+      fullPayment: object.fullPayment,
+      id: object.id,
+      product: {
+        id: object.product.id,
+        name: object.product.name,
+        provider: {
+          id: object.product.provider.id,
+          name: object.product.provider.name,
+        },
+      },
+      state: newState,
+    };
+
+    axios({
+      url: apiUrl,
+      method: 'PUT',
+      headers: {
         accept: '*/*',
+        ContentType: 'application/json',
         Authorization: 'Bearer ' + token,
-      }),
+      },
+      data: dataAct,
     })
-      .then(response => response.json())
-      .then(data => setSalesList(data))
+      .then(response => console.log(response))
       .catch(error => {
         console.error(error);
       });
+  };
+
+  useEffect(() => {
+    let mounted = true;
+    const token = localStorage.getItem('jhi-authenticationToken').slice(1, -1);
+    const apiUrl = window.location.href + 'api/sales/state/' + props.state;
+    if (mounted) {
+      axios({
+        url: apiUrl,
+        method: 'GET',
+        headers: {
+          accept: '*/*',
+          Authorization: 'Bearer ' + token,
+        },
+      })
+        .then(response => setSalesList(response.data))
+        .catch(error => {
+          console.error(error);
+        });
+    }
+    return () => (mounted = false);
   }, [props]);
 
   return (
@@ -41,10 +99,10 @@ function TableProducts(props) {
             <TableCell>Código</TableCell>
             <TableCell>Producto</TableCell>
             <TableCell>Proveedor</TableCell>
-            <TableCell>Fecha de entrega</TableCell>
+            <TableCell>Fecha de entrega </TableCell>
             <TableCell>Pagado</TableCell>
             <TableCell>Pago total</TableCell>
-            <TableCell></TableCell>
+            {props.state !== 'DELIVERED' ? <TableCell></TableCell> : <TableCell>Fecha de entrega final</TableCell>}
           </TableRow>
         </TableHead>
         {salesList && salesList.length > 0 && (
@@ -59,7 +117,19 @@ function TableProducts(props) {
                   <TableCell>{sale.amountPaid}</TableCell>
                   <TableCell>{sale.fullPayment}</TableCell>
                   <TableCell>
-                    <Button color="primary">Enviar</Button>
+                    {props.state !== 'DELIVERED' ? (
+                      props.state === 'IN_CHARGE' ? (
+                        <Button color="primary" onClick={() => handleChange(sale)}>
+                          Enviar
+                        </Button>
+                      ) : (
+                        <Button color="primary" onClick={() => handleChange(sale)}>
+                          Entregado
+                        </Button>
+                      )
+                    ) : (
+                      sale.finalDeliveredDate
+                    )}
                   </TableCell>
                 </TableRow>
               );
