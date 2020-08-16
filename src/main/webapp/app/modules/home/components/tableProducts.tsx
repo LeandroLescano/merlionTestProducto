@@ -31,7 +31,7 @@ function TableProducts(props) {
       .catch(error => {
         console.error(error);
       });
-  }, []);
+  }, [props]);
 
   return (
     <Paper>

@@ -12,14 +12,39 @@ import Container from '@material-ui/core/Container';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import { Row, Col, Alert, Table } from 'reactstrap';
 import TableProducts from './components/tableProducts';
+import Box from '@material-ui/core/Box';
 
 import { IRootState } from 'app/shared/reducers';
 
 export type IHomeProp = StateProps;
 
+interface TabPanelProps {
+  children?: React.ReactNode;
+  dir?: string;
+  index: any;
+  value: any;
+}
+
+function TabPanel(props: TabPanelProps) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`full-width-tabpanel-${index}`}
+      aria-labelledby={`full-width-tab-${index}`}
+      {...other}
+    >
+      {value === index && children}
+    </div>
+  );
+}
+
 export const Home = (props: IHomeProp) => {
   const { account } = props;
   const [value, setValue] = useState(0);
+  const [actualState, setActualState] = useState('IN_CHARGE');
 
   const theme = createMuiTheme({
     palette: {
@@ -61,7 +86,15 @@ export const Home = (props: IHomeProp) => {
               </Tabs>
             </ThemeProvider>
           </Paper>
-          <TableProducts state="SHIPPED" />
+          <TabPanel value={value} index={0}>
+            <TableProducts state="IN_CHARGE" />
+          </TabPanel>
+          <TabPanel value={value} index={1}>
+            <TableProducts state="SHIPPED" />
+          </TabPanel>
+          <TabPanel value={value} index={2}>
+            <TableProducts state="DELIVERED" />
+          </TabPanel>
         </div>
       ) : (
         <div>
