@@ -61,7 +61,7 @@ export const Home = (props: IHomeProp) => {
               </Tabs>
             </ThemeProvider>
           </Paper>
-          <TableProducts />
+          <TableProducts state="SHIPPED" />
         </div>
       ) : (
         <div>
