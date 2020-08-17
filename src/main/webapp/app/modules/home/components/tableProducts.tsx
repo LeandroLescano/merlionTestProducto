@@ -11,9 +11,12 @@ import Button from '@material-ui/core/Button';
 import sales from 'app/entities/sales/sales';
 import { SalesState } from 'app/entities/sales/sales.reducer';
 import axios from 'axios';
+import AlertSuccess from './alertSuccess';
 
 function TableProducts(props) {
   const [salesList, setSalesList] = useState([]);
+  const [alertShow, setAlertShow] = useState(false);
+  const [alertMsg, setAlertMsg] = useState<string>('');
 
   const getDate = () => {
     let date = null;
@@ -27,6 +30,7 @@ function TableProducts(props) {
 
   const handleChange = object => {
     let dataAct = {};
+    let msg = '';
     const token = localStorage.getItem('jhi-authenticationToken').slice(1, -1);
     const apiUrl = window.location.href + 'api/sales';
     setSalesList(salesList.filter(sale => sale.id !== object.id));
@@ -35,9 +39,11 @@ function TableProducts(props) {
     if (object.state === 'IN_CHARGE') {
       newState = 'SHIPPED';
       newFinalDate = object.finalDeliveredDate;
+      msg = 'Venta (' + object.id + ') enviada exitosamente!';
     } else if (object.state === 'SHIPPED') {
       newState = 'DELIVERED';
       newFinalDate = getDate();
+      msg = 'Venta (' + object.id + ') entregada exitosamente!';
     }
     dataAct = {
       amountPaid: object.amountPaid,
@@ -65,9 +71,14 @@ function TableProducts(props) {
         Authorization: 'Bearer ' + token,
       },
       data: dataAct,
-    }).catch(error => {
-      console.error(error);
-    });
+    })
+      .then(() => {
+        setAlertShow(true);
+        setAlertMsg(msg);
+      })
+      .catch(error => {
+        console.error(error);
+      });
   };
 
   useEffect(() => {
@@ -92,52 +103,55 @@ function TableProducts(props) {
   }, [props]);
 
   return (
-    <Paper>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>Código</TableCell>
-            <TableCell>Producto</TableCell>
-            <TableCell>Proveedor</TableCell>
-            <TableCell>Fecha de entrega </TableCell>
-            <TableCell>Pagado</TableCell>
-            <TableCell>Pago total</TableCell>
-            {props.state !== 'DELIVERED' ? <TableCell></TableCell> : <TableCell>Fecha de entrega final</TableCell>}
-          </TableRow>
-        </TableHead>
-        {salesList && salesList.length > 0 && (
-          <TableBody>
-            {salesList.map((sale, i) => {
-              return (
-                <TableRow key={i}>
-                  <TableCell>{sale.id}</TableCell>
-                  <TableCell>{sale.product.name}</TableCell>
-                  <TableCell>{sale.product.provider.name}</TableCell>
-                  <TableCell>{sale.deliveredDate}</TableCell>
-                  <TableCell>{sale.amountPaid}</TableCell>
-                  <TableCell>{sale.fullPayment}</TableCell>
-                  <TableCell>
-                    {props.state !== 'DELIVERED' ? (
-                      props.state === 'IN_CHARGE' ? (
-                        <Button className={`${props.styles.button}`} onClick={() => handleChange(sale)}>
-                          Enviar
-                        </Button>
+    <>
+      <Paper>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Código</TableCell>
+              <TableCell>Producto</TableCell>
+              <TableCell>Proveedor</TableCell>
+              <TableCell>Fecha de entrega </TableCell>
+              <TableCell>Pagado</TableCell>
+              <TableCell>Pago total</TableCell>
+              {props.state !== 'DELIVERED' ? <TableCell></TableCell> : <TableCell>Fecha de entrega final</TableCell>}
+            </TableRow>
+          </TableHead>
+          {salesList && salesList.length > 0 && (
+            <TableBody>
+              {salesList.map((sale, i) => {
+                return (
+                  <TableRow key={i}>
+                    <TableCell>{sale.id}</TableCell>
+                    <TableCell>{sale.product.name}</TableCell>
+                    <TableCell>{sale.product.provider.name}</TableCell>
+                    <TableCell>{sale.deliveredDate}</TableCell>
+                    <TableCell>{sale.amountPaid}</TableCell>
+                    <TableCell>{sale.fullPayment}</TableCell>
+                    <TableCell>
+                      {props.state !== 'DELIVERED' ? (
+                        props.state === 'IN_CHARGE' ? (
+                          <Button className={`${props.styles.button}`} onClick={() => handleChange(sale)}>
+                            Enviar
+                          </Button>
+                        ) : (
+                          <Button className={`${props.styles.button}`} onClick={() => handleChange(sale)}>
+                            Entregado
+                          </Button>
+                        )
                       ) : (
-                        <Button className={`${props.styles.button}`} onClick={() => handleChange(sale)}>
-                          Entregado
-                        </Button>
-                      )
-                    ) : (
-                      sale.finalDeliveredDate
-                    )}
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        )}
-      </Table>
-    </Paper>
+                        sale.finalDeliveredDate
+                      )}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          )}
+        </Table>
+      </Paper>
+      <AlertSuccess show={alertShow} message={alertMsg} close={() => setAlertShow(false)} />
+    </>
   );
 }
 

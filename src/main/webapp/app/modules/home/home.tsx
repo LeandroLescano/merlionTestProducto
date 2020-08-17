@@ -69,7 +69,7 @@ export const Home = (props: IHomeProp) => {
       backgroundColor: '#2a6a9e',
       color: 'white',
       '&:hover': {
-        backgroundColor: '#002a49',
+        backgroundColor: '#5E99C5',
       },
     },
   });
