@@ -57,7 +57,7 @@ export const Home = (props: IHomeProp) => {
     },
   });
 
-  const useStyles = makeStyles(themeMerlion => ({
+  const useStyles = makeStyles({
     root: {
       backgroundColor: '#2a6a9e',
       color: 'lightgray',
@@ -65,9 +65,16 @@ export const Home = (props: IHomeProp) => {
     tabs: {
       color: 'rgba(255,255,255,0.5)',
     },
-  }));
+    button: {
+      backgroundColor: '#2a6a9e',
+      color: 'white',
+      '&:hover': {
+        backgroundColor: '#002a49',
+      },
+    },
+  });
 
-  const classes = useStyles(props);
+  const classes = useStyles();
 
   const handleChange = (num: number) => {
     setValue(num);
@@ -87,13 +94,13 @@ export const Home = (props: IHomeProp) => {
             </ThemeProvider>
           </Paper>
           <TabPanel value={value} index={0}>
-            <TableProducts state="IN_CHARGE" />
+            <TableProducts styles={classes} state="IN_CHARGE" />
           </TabPanel>
           <TabPanel value={value} index={1}>
-            <TableProducts state="SHIPPED" />
+            <TableProducts styles={classes} state="SHIPPED" />
           </TabPanel>
           <TabPanel value={value} index={2}>
-            <TableProducts state="DELIVERED" />
+            <TableProducts styles={classes} state="DELIVERED" />
           </TabPanel>
         </div>
       ) : (

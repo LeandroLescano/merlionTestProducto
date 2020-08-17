@@ -9,6 +9,6 @@ Main page styles
   background-size: contain;
 }
 
-// .MuiTabs-root {
-//   background-color: #2a6a9e;
-// }
+*:focus {
+  outline: none !important;
+}

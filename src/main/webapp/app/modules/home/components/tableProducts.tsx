@@ -16,10 +16,12 @@ function TableProducts(props) {
   const [salesList, setSalesList] = useState([]);
 
   const getDate = () => {
-    var date = new Date();
-    var month = date.getMonth() + 1;
-    var currentDate = date.getFullYear() + '-' + month.toString().padStart(2, '0') + '-' + date.getDate().toString().padStart(2, '0');
-    console.log(currentDate);
+    let date = null;
+    let month = null;
+    let currentDate = '';
+    date = new Date();
+    month = date.getMonth() + 1;
+    currentDate = date.getFullYear() + '-' + month.toString().padStart(2, '0') + '-' + date.getDate().toString().padStart(2, '0');
     return currentDate;
   };
 
@@ -63,11 +65,9 @@ function TableProducts(props) {
         Authorization: 'Bearer ' + token,
       },
       data: dataAct,
-    })
-      .then(response => console.log(response))
-      .catch(error => {
-        console.error(error);
-      });
+    }).catch(error => {
+      console.error(error);
+    });
   };
 
   useEffect(() => {
@@ -119,11 +119,11 @@ function TableProducts(props) {
                   <TableCell>
                     {props.state !== 'DELIVERED' ? (
                       props.state === 'IN_CHARGE' ? (
-                        <Button color="primary" onClick={() => handleChange(sale)}>
+                        <Button className={`${props.styles.button}`} onClick={() => handleChange(sale)}>
                           Enviar
                         </Button>
                       ) : (
-                        <Button color="primary" onClick={() => handleChange(sale)}>
+                        <Button className={`${props.styles.button}`} onClick={() => handleChange(sale)}>
                           Entregado
                         </Button>
                       )
