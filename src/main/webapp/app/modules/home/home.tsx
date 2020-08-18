@@ -13,6 +13,7 @@ import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import { Row, Col, Alert, Table } from 'reactstrap';
 import TableProducts from './components/tableProducts';
 import Box from '@material-ui/core/Box';
+import axios from 'axios';
 
 import { IRootState } from 'app/shared/reducers';
 
@@ -44,7 +45,7 @@ function TabPanel(props: TabPanelProps) {
 export const Home = (props: IHomeProp) => {
   const { account } = props;
   const [value, setValue] = useState(0);
-  const [actualState, setActualState] = useState('IN_CHARGE');
+  const [salesList, setSalesList] = useState([]);
 
   const theme = createMuiTheme({
     palette: {
@@ -76,8 +77,38 @@ export const Home = (props: IHomeProp) => {
 
   const classes = useStyles();
 
+  useEffect(() => {
+    let mounted = true;
+    const token = localStorage.getItem('jhi-authenticationToken').slice(1, -1);
+    const apiUrl = window.location.href + 'api/sales';
+    if (mounted) {
+      axios({
+        url: apiUrl,
+        method: 'GET',
+        headers: {
+          accept: '*/*',
+          Authorization: 'Bearer ' + token,
+        },
+      })
+        .then(response => setSalesList(response.data))
+        .catch(error => {
+          console.error(error);
+        });
+    }
+    return () => (mounted = false);
+  }, []);
+
   const handleChange = (num: number) => {
     setValue(num);
+  };
+
+  const handleUpdate = saleUpdated => {
+    let index = -1;
+    let list = [];
+    index = salesList.map(s => s.id).indexOf(saleUpdated.id);
+    list = [...salesList];
+    list[index] = saleUpdated;
+    setSalesList(list);
   };
 
   return (
@@ -94,13 +125,23 @@ export const Home = (props: IHomeProp) => {
             </ThemeProvider>
           </Paper>
           <TabPanel value={value} index={0}>
-            <TableProducts styles={classes} state="IN_CHARGE" />
+            <TableProducts
+              styles={classes}
+              state="IN_CHARGE"
+              list={salesList.filter(sale => sale.state === 'IN_CHARGE')}
+              handleUpdate={saleUpdate => handleUpdate(saleUpdate)}
+            />
           </TabPanel>
           <TabPanel value={value} index={1}>
-            <TableProducts styles={classes} state="SHIPPED" />
+            <TableProducts
+              styles={classes}
+              state="SHIPPED"
+              list={salesList.filter(sale => sale.state === 'SHIPPED')}
+              handleUpdate={saleUpdate => handleUpdate(saleUpdate)}
+            />
           </TabPanel>
           <TabPanel value={value} index={2}>
-            <TableProducts styles={classes} state="DELIVERED" />
+            <TableProducts styles={classes} state="DELIVERED" list={salesList.filter(sale => sale.state === 'DELIVERED')} />
           </TabPanel>
         </div>
       ) : (

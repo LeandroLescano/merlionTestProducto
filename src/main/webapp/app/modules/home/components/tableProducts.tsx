@@ -1,20 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { connect } from 'react-redux';
 import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Button from '@material-ui/core/Button';
-import sales from 'app/entities/sales/sales';
-import { SalesState } from 'app/entities/sales/sales.reducer';
 import axios from 'axios';
 import AlertSuccess from './alertSuccess';
 
 function TableProducts(props) {
-  const [salesList, setSalesList] = useState([]);
   const [alertShow, setAlertShow] = useState(false);
   const [alertMsg, setAlertMsg] = useState<string>('');
 
@@ -33,17 +28,16 @@ function TableProducts(props) {
     let msg = '';
     const token = localStorage.getItem('jhi-authenticationToken').slice(1, -1);
     const apiUrl = window.location.href + 'api/sales';
-    setSalesList(salesList.filter(sale => sale.id !== object.id));
     let newState = '';
     let newFinalDate = '';
     if (object.state === 'IN_CHARGE') {
       newState = 'SHIPPED';
       newFinalDate = object.finalDeliveredDate;
-      msg = 'Venta (' + object.id + ') enviada exitosamente!';
+      msg = 'Venta Nro.' + object.id + ' enviada exitosamente!';
     } else if (object.state === 'SHIPPED') {
       newState = 'DELIVERED';
       newFinalDate = getDate();
-      msg = 'Venta (' + object.id + ') entregada exitosamente!';
+      msg = 'Venta Nro.' + object.id + ' entregada exitosamente!';
     }
     dataAct = {
       amountPaid: object.amountPaid,
@@ -75,32 +69,14 @@ function TableProducts(props) {
       .then(() => {
         setAlertShow(true);
         setAlertMsg(msg);
+        object.state = newState;
+        object.finalDeliveredDate = newFinalDate;
+        props.handleUpdate(object);
       })
       .catch(error => {
         console.error(error);
       });
   };
-
-  useEffect(() => {
-    let mounted = true;
-    const token = localStorage.getItem('jhi-authenticationToken').slice(1, -1);
-    const apiUrl = window.location.href + 'api/sales/state/' + props.state;
-    if (mounted) {
-      axios({
-        url: apiUrl,
-        method: 'GET',
-        headers: {
-          accept: '*/*',
-          Authorization: 'Bearer ' + token,
-        },
-      })
-        .then(response => setSalesList(response.data))
-        .catch(error => {
-          console.error(error);
-        });
-    }
-    return () => (mounted = false);
-  }, [props]);
 
   return (
     <>
@@ -117,9 +93,9 @@ function TableProducts(props) {
               {props.state !== 'DELIVERED' ? <TableCell></TableCell> : <TableCell>Fecha de entrega final</TableCell>}
             </TableRow>
           </TableHead>
-          {salesList && salesList.length > 0 && (
+          {props.list && props.list.length > 0 ? (
             <TableBody>
-              {salesList.map((sale, i) => {
+              {props.list.map((sale, i) => {
                 return (
                   <TableRow key={i}>
                     <TableCell>{sale.id}</TableCell>
@@ -146,6 +122,14 @@ function TableProducts(props) {
                   </TableRow>
                 );
               })}
+            </TableBody>
+          ) : (
+            <TableBody>
+              <TableRow>
+                <TableCell className="text-center" colSpan={7}>
+                  <h5>No se han encontrado registros</h5>
+                </TableCell>
+              </TableRow>
             </TableBody>
           )}
         </Table>
