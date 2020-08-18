@@ -90,7 +90,7 @@ export const Home = (props: IHomeProp) => {
           Authorization: 'Bearer ' + token,
         },
       })
-        .then(response => setSalesList(response.data))
+        .then(response => setSalesList(response.data.sort((a, b) => a.id - b.id)))
         .catch(error => {
           console.error(error);
         });
