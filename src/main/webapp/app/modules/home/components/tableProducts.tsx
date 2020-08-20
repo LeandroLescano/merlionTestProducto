@@ -14,22 +14,23 @@ function TableProducts(props) {
   const [alertMsg, setAlertMsg] = useState<string>('');
 
   const getDate = () => {
-    let date = null;
-    let month = null;
-    let currentDate = '';
-    date = new Date();
-    month = date.getMonth() + 1;
-    currentDate = date.getFullYear() + '-' + month.toString().padStart(2, '0') + '-' + date.getDate().toString().padStart(2, '0');
+    const date = new Date();
+    const month = date.getMonth() + 1;
+    const currentDate = date.getFullYear() + '-' + month.toString().padStart(2, '0') + '-' + date.getDate().toString().padStart(2, '0');
     return currentDate;
   };
 
   const handleChange = object => {
-    let dataAct = {};
-    let msg = '';
-    const token = localStorage.getItem('jhi-authenticationToken').slice(1, -1);
+    let token = '';
+    axios({ url: window.location.href + 'api/authenticate' })
+      .then(response => (token = response.config.headers.Authorization))
+      .catch(error => console.error(error));
     const apiUrl = window.location.href + 'api/sales';
-    let newState = '';
+    let msg = '';
+    let newState = object.state;
     let newFinalDate = '';
+
+    //Check actual state to assign the new state
     if (object.state === 'IN_CHARGE') {
       newState = 'SHIPPED';
       newFinalDate = object.finalDeliveredDate;
@@ -39,7 +40,9 @@ function TableProducts(props) {
       newFinalDate = getDate();
       msg = 'Venta Nro.' + object.id + ' entregada exitosamente!';
     }
-    dataAct = {
+
+    //Save new object to modify in the db by the API
+    const dataAct = {
       amountPaid: object.amountPaid,
       deliveredDate: object.deliveredDate,
       finalDeliveredDate: newFinalDate,
@@ -55,7 +58,7 @@ function TableProducts(props) {
       },
       state: newState,
     };
-
+    //Call API for update the sale
     axios({
       url: apiUrl,
       method: 'PUT',
@@ -67,6 +70,7 @@ function TableProducts(props) {
       data: dataAct,
     })
       .then(() => {
+        //Show success alert and update list in home.tsx
         setAlertShow(true);
         setAlertMsg(msg);
         object.state = newState;

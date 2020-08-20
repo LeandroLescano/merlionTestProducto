@@ -79,7 +79,10 @@ export const Home = (props: IHomeProp) => {
 
   useEffect(() => {
     let mounted = true;
-    const token = localStorage.getItem('jhi-authenticationToken').slice(1, -1);
+    let token = '';
+    axios({ url: window.location.href + 'api/authenticate' })
+      .then(response => (token = response.config.headers.Authorization))
+      .catch(error => console.error(error));
     const apiUrl = window.location.href + 'api/sales';
     if (mounted) {
       axios({
@@ -99,14 +102,14 @@ export const Home = (props: IHomeProp) => {
   }, []);
 
   const handleChange = (num: number) => {
+    //Change tab panel
     setValue(num);
   };
 
   const handleUpdate = saleUpdated => {
-    let index = -1;
-    let list = [];
-    index = salesList.map(s => s.id).indexOf(saleUpdated.id);
-    list = [...salesList];
+    //Update local sales list
+    const index = salesList.map(s => s.id).indexOf(saleUpdated.id);
+    const list = [...salesList];
     list[index] = saleUpdated;
     setSalesList(list);
   };
