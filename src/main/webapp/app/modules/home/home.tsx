@@ -90,7 +90,7 @@ export const Home = (props: IHomeProp) => {
         method: 'GET',
         headers: {
           accept: '*/*',
-          Authorization: 'Bearer ' + token,
+          Authorization: token,
         },
       })
         .then(response => setSalesList(response.data.sort((a, b) => a.id - b.id)))
@@ -102,12 +102,12 @@ export const Home = (props: IHomeProp) => {
   }, []);
 
   const handleChange = (num: number) => {
-    //Change tab panel
+    //  Change tab panel
     setValue(num);
   };
 
   const handleUpdate = saleUpdated => {
-    //Update local sales list
+    //  Update local sales list
     const index = salesList.map(s => s.id).indexOf(saleUpdated.id);
     const list = [...salesList];
     list[index] = saleUpdated;

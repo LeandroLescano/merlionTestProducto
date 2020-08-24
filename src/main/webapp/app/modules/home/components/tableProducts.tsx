@@ -20,62 +20,47 @@ function TableProducts(props) {
     return currentDate;
   };
 
-  const handleChange = object => {
+  const handleChange = productToUpdate => {
     let token = '';
     axios({ url: window.location.href + 'api/authenticate' })
       .then(response => (token = response.config.headers.Authorization))
       .catch(error => console.error(error));
     const apiUrl = window.location.href + 'api/sales';
     let msg = '';
-    let newState = object.state;
+    let newState = productToUpdate.state;
     let newFinalDate = '';
 
-    //Check actual state to assign the new state
-    if (object.state === 'IN_CHARGE') {
+    //  Check actual state to assign the new state
+    if (productToUpdate.state === 'IN_CHARGE') {
       newState = 'SHIPPED';
-      newFinalDate = object.finalDeliveredDate;
-      msg = 'Venta Nro.' + object.id + ' enviada exitosamente!';
-    } else if (object.state === 'SHIPPED') {
+      newFinalDate = productToUpdate.finalDeliveredDate;
+      msg = 'Venta Nro.' + productToUpdate.id + ' enviada exitosamente!';
+    } else if (productToUpdate.state === 'SHIPPED') {
       newState = 'DELIVERED';
       newFinalDate = getDate();
-      msg = 'Venta Nro.' + object.id + ' entregada exitosamente!';
+      msg = 'Venta Nro.' + productToUpdate.id + ' entregada exitosamente!';
     }
 
-    //Save new object to modify in the db by the API
-    const dataAct = {
-      amountPaid: object.amountPaid,
-      deliveredDate: object.deliveredDate,
-      finalDeliveredDate: newFinalDate,
-      fullPayment: object.fullPayment,
-      id: object.id,
-      product: {
-        id: object.product.id,
-        name: object.product.name,
-        provider: {
-          id: object.product.provider.id,
-          name: object.product.provider.name,
-        },
-      },
-      state: newState,
-    };
-    //Call API for update the sale
+    //  Update object to modify in the db by the API
+    productToUpdate.state = newState;
+    productToUpdate.finalDeliveredDate = newFinalDate;
+
+    //  Call API for update the sale
     axios({
       url: apiUrl,
       method: 'PUT',
       headers: {
         accept: '*/*',
         ContentType: 'application/json',
-        Authorization: 'Bearer ' + token,
+        Authorization: token,
       },
-      data: dataAct,
+      data: productToUpdate,
     })
       .then(() => {
-        //Show success alert and update list in home.tsx
+        //  Show success alert and update list in home.tsx
         setAlertShow(true);
         setAlertMsg(msg);
-        object.state = newState;
-        object.finalDeliveredDate = newFinalDate;
-        props.handleUpdate(object);
+        props.handleUpdate(productToUpdate);
       })
       .catch(error => {
         console.error(error);
